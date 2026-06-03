@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="placeholder_for_verification">
+  
+  <title>scentmark — Premium Designer & Middle Eastern Fragrances Collection</title>
+  <meta name="description" content="Premium Designer &amp; Middle Eastern Fragrances in Bangladesh. Enjoy cash on delivery, bKash, Nogod, or Rocket payments with fast nationwide shipping.">
+  <meta name="keywords" content="scentmark, fragrances Bangladesh, Middle Eastern perfume, designer perfume, buy perfume Sylhet, bKash cash on delivery">
+  <meta name="author" content="scentmark">
+  <meta name="robots" content="index, follow">
+
+  <!-- Cache-Control Settings -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scentmark.github.io/">
+  <meta property="og:title" content="scentmark — Premium Designer & Middle Eastern Fragrances Collection">
+  <meta property="og:description" content="Discover premium designer and Middle Eastern fragrances in Bangladesh. Cash on delivery & mobile payments accepted. Fast delivery.">
+  <meta property="og:image" content="https://scentmark.github.io/images/og-share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Inline SVG Favicon containing letter 'S' in white on Amber background -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23a37a3d'/%3E%3Ctext x='50%25' y='55%25' font-size='18' font-family='Arial, sans-serif' font-weight='bold' fill='%23ffffff' text-anchor='middle' dominant-baseline='middle'%3ES%3C/text%3E%3C/svg%3E">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Structured Schema Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "OnlineStore",
+    "name": "scentmark",
+    "description": "Premium Designer & Middle Eastern Fragrances Collection",
+    "url": "https://scentmark.github.io/",
+    "telephone": "+8801305041433",
+    "paymentAccepted": "Cash, bKash, Nogod, Rocket",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Sylhet, Bangladesh",
+      "addressLocality": "Sylhet",
+      "postalCode": "3100",
+      "addressCountry": "BD"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Toast Notification System -->
+  <div id="toast" role="alert" aria-live="assertive"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container container">
+      <div class="logo" id="header-logo" onclick="showHome()">
+        scent<span>mark</span>
+      </div>
+      
+      <!-- Desktop Search -->
+      <div class="search-container desktop-search">
+        <input type="text" placeholder="Search fragrances..." id="search-input-desktop" oninput="handleSearch(event)">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      </div>
+
+      <div class="header-actions">
+        <!-- Mobile Search Toggle -->
+        <button id="mobile-search-toggle" aria-label="Toggle Search" onclick="toggleMobileSearch()">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+        
+        <!-- Cart Trigger -->
+        <button id="cart-btn" aria-label="View Cart" onclick="toggleCart(true)">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span id="cart-badge" class="badge">0</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Mobile Search Bar (Expandable) -->
+    <div class="mobile-search-bar container hidden" id="mobile-search-wrap">
+      <input type="text" placeholder="Search fragrances..." id="search-input-mobile" oninput="handleSearch(event)">
+    </div>
+  </header>
+
+  <!-- Views -->
+
+  <!-- 1. Home / Product Grid View -->
+  <main id="home-view" class="container">
+    <div class="view-header">
+      <h1>All Products</h1>
+    </div>
+    <div id="product-grid" class="product-grid">
+      <!-- Skeleton Loaders -->
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    </div>
+  </main>
+
+  <!-- 2. Product Detail View -->
+  <main id="detail-view" class="container hidden">
+    <button class="btn-back" onclick="showHome()">
+      <i class="fa-solid fa-arrow-left"></i> Back to Products
+    </button>
+    <div class="detail-container">
+      <div class="detail-img-wrap">
+        <span class="detail-badge" id="detail-badge"></span>
+        <img id="detail-img" src="" alt="Product Image">
+      </div>
+      <div class="detail-info">
+        <h1 id="detail-title"></h1>
+        <div class="detail-prices">
+          <span class="detail-price-sale" id="detail-price-sale"></span>
+          <span class="detail-price-old" id="detail-price-old"></span>
+          <span class="detail-savings-badge" id="detail-savings"></span>
+        </div>
+        <div class="detail-desc-wrap" id="detail-desc-container">
+          <p class="detail-desc" id="detail-desc"></p>
+        </div>
+        <div class="detail-features-wrap" id="detail-features-container">
+          <h4>Key Features</h4>
+          <ul class="detail-features" id="detail-features-list"></ul>
+        </div>
+        <button id="detail-add-btn" class="btn-primary btn-large">Add to Cart</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 3. Checkout View -->
+  <main id="checkout-view" class="container hidden">
+    <button class="btn-back" onclick="showHome()">
+      <i class="fa-solid fa-arrow-left"></i> Continue Shopping
+    </button>
+    <div class="checkout-grid">
+      <!-- Checkout Form -->
+      <form id="checkout-form" onsubmit="event.preventDefault(); placeOrder();">
+        <h2>Customer Information</h2>
+        
+        <div class="form-group">
+          <label for="checkout-name">Full Name <span class="required">*</span></label>
+          <input type="text" id="checkout-name" required placeholder="e.g. Tanvir Rahman">
+        </div>
+        
+        <div class="form-group">
+          <label for="checkout-phone">Phone Number <span class="required">*</span> <span class="validation-hint" id="phone-hint">(Use valid 11-digit Bangladesh number)</span></label>
+          <input type="tel" id="checkout-phone" required placeholder="e.g. 01712345678">
+        </div>
+
+        <div class="form-group">
+          <label for="checkout-email">Email Address <span class="optional">(Optional)</span></label>
+          <input type="email" id="checkout-email" placeholder="e.g. name@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="checkout-address">Delivery Address <span class="required">*</span></label>
+          <textarea id="checkout-address" required placeholder="House, Road, Area, District" rows="3"></textarea>
+        </div>
+
+        <h2>Payment Method</h2>
+        <div class="payment-methods-grid">
+          <!-- COD Card -->
+          <label class="payment-card selected" onclick="selectPayment('cod', this)">
+            <input type="radio" name="payment_method" value="cod" checked>
+            <div class="payment-info">
+              <span class="payment-title">Cash on Delivery (COD)</span>
+              <span class="payment-desc">Pay with cash upon receiving your parcel.</span>
+            </div>
+          </label>
+
+          <!-- bKash Card -->
+          <label class="payment-card" onclick="selectPayment('bkash', this)">
+            <input type="radio" name="payment_method" value="bkash">
+            <div class="payment-info">
+              <span class="payment-title">bKash (Send Money)</span>
+              <span class="payment-desc">Send to personal number: <strong>+8801305041433</strong></span>
+            </div>
+          </label>
+
+          <!-- Nagad Card -->
+          <label class="payment-card" onclick="selectPayment('nagad', this)">
+            <input type="radio" name="payment_method" value="nagad">
+            <div class="payment-info">
+              <span class="payment-title">Nagad (Send Money)</span>
+              <span class="payment-desc">Send to personal number: <strong>+8801305041433</strong></span>
+            </div>
+          </label>
+
+          <!-- Rocket Card -->
+          <label class="payment-card" onclick="selectPayment('rocket', this)">
+            <input type="radio" name="payment_method" value="rocket">
+            <div class="payment-info">
+              <span class="payment-title">Rocket (Send Money)</span>
+              <span class="payment-desc">Send to personal number: <strong>+8801305041433-4</strong></span>
+            </div>
+          </label>
+        </div>
+
+        <!-- Conditional Transaction ID -->
+        <div id="trx-field-container" class="form-group hidden">
+          <label for="checkout-trx-id">Transaction ID <span class="required">*</span></label>
+          <input type="text" id="checkout-trx-id" placeholder="Enter Transaction ID after sending payment">
+        </div>
+
+        <button type="submit" id="btn-submit-order" class="btn-primary btn-large">
+          <i class="fa-brands fa-whatsapp"></i> <span id="btn-submit-text">Place Order via WhatsApp</span>
+          <span class="spinner hidden" id="order-spinner"></span>
+        </button>
+      </form>
+
+      <!-- Order Summary -->
+      <div class="order-summary-box">
+        <h3>Order Summary</h3>
+        <div id="checkout-summary-items"></div>
+        <hr>
+        <div class="summary-row total-row">
+          <span>Total:</span>
+          <span id="checkout-summary-total">৳ 0</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 4. Order Confirmation View -->
+  <main id="confirm-view" class="container hidden">
+    <div class="confirm-card">
+      <div class="confirm-icon"><i class="fa-solid fa-circle-check"></i></div>
+      <h1>Order Placed!</h1>
+      <p>Thank you. Your order has been successfully generated.</p>
+      
+      <div class="confirm-details">
+        <div><span>Phone Number:</span> <strong id="confirm-phone"></strong></div>
+        <div><span>Order ID:</span> <code id="confirm-order-id"></code></div>
+      </div>
+
+      <div class="confirm-cta">
+        <a id="confirm-whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer" class="btn-whatsapp">
+          <i class="fa-brands fa-whatsapp"></i> Send Details via WhatsApp
+        </a>
+        <p class="confirm-note">Your order is already saved in our database even if you do not click the WhatsApp link.</p>
+      </div>
+
+      <button onclick="showHome()" class="btn-secondary">Continue Shopping</button>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container container">
+      <div class="footer-info">
+        <div class="logo">scent<span>mark</span></div>
+        <p>Sylhet, Bangladesh | Nationwide Delivery</p>
+      </div>
+      <div class="footer-contacts">
+        <a href="https://wa.me/8801305041433" target="_blank" rel="noopener noreferrer">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp: +8801305041433
+        </a>
+        <a href="mailto:scentmark@gmail.com">
+          <i class="fa-regular fa-envelope"></i> scentmark@gmail.com
+        </a>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
+        <span class="divider">·</span>
+        <a href="terms.html" target="_blank" rel="noopener">Terms & Conditions</a>
+      </div>
+      <div class="footer-copyright">
+        &copy; <span id="current-year"></span> scentmark. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Drawer Cart Overlay and Sidebar -->
+  <div id="cart-overlay" onclick="toggleCart(false)"></div>
+  <aside id="cart-sidebar">
+    <div class="cart-header">
+      <h3>Your Cart</h3>
+      <button class="cart-close" onclick="toggleCart(false)" aria-label="Close Cart">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    
+    <div id="cart-items-container" class="cart-items-body">
+      <!-- JS injected items -->
+    </div>
+
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Subtotal:</span>
+        <span id="cart-total-amount">৳ 0</span>
+      </div>
+      <button class="btn-primary btn-checkout" onclick="goToCheckout()">Proceed to Checkout</button>
+    </div>
+  </aside>
+
+  <!-- Application Logic -->
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "name": "Club de Nuit Intense Man EDT - Armaf",
+    "price": 3800,
+    "old_price": 4500,
+    "image": "images/armaf-cdnim.jpg",
+    "description": "Club de Nuit Intense Man by Armaf is a provocative woody spicy fragrance for men. Highly acclaimed for its intense, fresh lemon-apple-pineapple opening drying down into a premium smoky birch wood and patchouli aroma.",
+    "features": [
+      "105ml Eau de Toilette (EDT)",
+      "High-projection and longevity profile",
+      "Perfect for everyday signature scent"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Lattafa Khamrah EDP",
+    "price": 2900,
+    "old_price": 3500,
+    "image": "images/lattafa-khamrah.jpg",
+    "description": "Khamrah by Lattafa Perfumes is a luxurious Amber Vanilla warm spicy fragrance. It wraps sweetness with oriental warmth featuring heavy spices, dates, vanilla, and sweet praline.",
+    "features": [
+      "100ml Eau de Parfum (EDP)",
+      "Unisex formulation",
+      "Exquisite heavy glass bottle display structure"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Rasasi Hawas for Him EDP",
+    "price": 5200,
+    "old_price": 6000,
+    "image": "images/rasasi-hawas.jpg",
+    "description": "Rasasi Hawas for Him blends cinnamon, bergamot, orange blossom, grey amber and sandalwood to create an aquatic fragrance designed to embody masculine strength and vigor.",
+    "features": [
+      "100ml EDP concentration",
+      "Signature metallic aquatic fragrance profile",
+      "Exceptional longevity in hot climates"
+    ]
+  }
+]

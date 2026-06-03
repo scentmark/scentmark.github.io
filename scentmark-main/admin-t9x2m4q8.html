@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Admin Panel — scentmark</title>
+  <style>
+    :root {
+      --primary: #a37a3d;
+      --primary-hover: #886530;
+      --dark: #222222;
+      --light: #f9f9f9;
+      --border: #e0e0e0;
+      --font: system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background-color: var(--light); color: var(--dark); padding: 20px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    
+    /* Login Box */
+    .login-box {
+      max-width: 400px;
+      margin: 100px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .login-box h2 { margin-bottom: 20px; font-size: 22px; text-align: center; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
+    .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; }
+    
+    /* Button Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .btn-block { width: 100%; }
+    .btn-primary { background-color: var(--dark); color: #fff; }
+    .btn-primary:hover { background-color: var(--primary); }
+    .btn-success { background-color: #2e7d32; color: #fff; }
+    .btn-success:hover { background-color: #1b5e20; }
+    .btn-danger { background-color: #c62828; color: #fff; }
+    .btn-danger:hover { background-color: #b71c1c; }
+    
+    /* Dashboard Elements */
+    .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .session-info { font-size: 14px; color: #555555; display: flex; align-items: center; gap: 15px; }
+    
+    /* Stats Row */
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: #fff; padding: 20px; border-radius: 6px; border: 1px solid var(--border); text-align: center; }
+    .stat-card h3 { font-size: 14px; color: #666; margin-bottom: 8px; }
+    .stat-card p { font-size: 24px; font-weight: 700; color: var(--primary); }
+    
+    /* Product Table */
+    .table-container { background: #fff; border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; margin-bottom: 40px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    th { background-color: #f1f1f1; font-weight: 600; font-size: 14px; }
+    td img { width: 50px; height: 50px; object-fit: contain; border: 1px solid var(--border); background: #fff; border-radius: 4px; }
+    .discount-pill { background-color: rgba(163, 122, 61, 0.1); color: var(--primary); padding: 2px 8px; border-radius: 12px; font-weight: 700; font-size: 12px; }
+    
+    /* Modal Popups */
+    .modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content { background: #fff; padding: 30px; border-radius: 8px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+    .modal-title { font-size: 18px; margin-bottom: 20px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    
+    /* Toast */
+    #toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: #fff; padding: 12px 24px; border-radius: 4px; display: none; z-index: 1100; font-size: 14px; }
+    
+    /* Drag & Drop */
+    .drop-zone { border: 2px dashed var(--border); border-radius: 4px; padding: 20px; text-align: center; cursor: pointer; background-color: #fafafa; }
+    .drop-zone:hover { border-color: var(--primary); }
+    .preview-box { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+    .preview-box img { width: 80px; height: 80px; object-fit: contain; border: 1px solid var(--border); }
+    
+    /* Dynamic Features Row */
+    .feature-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .feature-row input { flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 4px; }
+    
+    /* Loader Overlay */
+    .loader-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:2000; display:none; flex-direction:column; align-items:center; justify-content:center; }
+    .loader-spinner { width:40px; height:40px; border:4px solid #f3f3f3; border-top:4px solid var(--primary); border-radius:50%; animation: spin 1s linear infinite; margin-bottom:15px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- Toast system -->
+  <div id="toast"></div>
+
+  <!-- Loading Screen overlay -->
+  <div class="loader-overlay" id="loading-overlay">
+    <div class="loader-spinner"></div>
+    <div id="loading-msg">Connecting to GitHub API...</div>
+  </div>
+
+  <div class="container">
+    
+    <!-- AUTH VIEW -->
+    <div id="auth-view" class="login-box">
+      <h2>scentmark Admin</h2>
+      <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
+        <div class="form-group">
+          <label for="repo-name">GitHub Repository (owner/repo)</label>
+          <input type="text" id="repo-name" placeholder="e.g. scentmark/store" required>
+        </div>
+        <div class="form-group">
+          <label for="pat-token">Personal Access Token (PAT)</label>
+          <input type="password" id="pat-token" placeholder="ghp_xxxxxxxxxxxx" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+      </form>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="main-dashboard" style="display: none;">
+      <div class="dashboard-header">
+        <div>
+          <h2>Product Inventory Management</h2>
+          <div class="session-info">
+            <span>Repo: <strong id="lbl-repo"></strong></span>
+            <span>Session Timeout: <strong id="lbl-timer">30:00</strong></span>
+          </div>
+        </div>
+        <div>
+          <button class="btn btn-primary" onclick="openProductModal()">Add Product</button>
+          <button class="btn btn-success" id="btn-push" onclick="pushChangesToGitHub()">Push to GitHub</button>
+          <button class="btn btn-danger" onclick="handleLogout()">Logout</button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <h3>Total Products</h3>
+          <p id="stat-total-products">0</p>
+        </div>
+        <div class="stat-card">
+          <h3>Average Discount</h3>
+          <p id="stat-avg-discount">0%</p>
+        </div>
+        <div class="stat-card">
+          <h3>Last Sync Status</h3>
+          <p id="stat-sync-time" style="font-size: 13px; color: #333; margin-top:5px;">No changes pushed yet</p>
+        </div>
+      </div>
+
+      <!-- Inventory Table -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>#ID</th>
+              <th>Thumbnail</th>
+              <th>Name</th>
+              <th>Sale Price</th>
+              <th>Old Price</th>
+              <th>Discount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-tbody">
+            <!-- Dynamic Injection -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PRODUCT EDIT/ADD MODAL -->
+  <div class="modal" id="product-modal" style="display: none;">
+    <div class="modal-content">
+      <h3 class="modal-title" id="modal-heading">Add Product</h3>
+      <form id="product-form" onsubmit="event.preventDefault(); saveProductLocal();">
+        <div class="form-group">
+          <label for="p-name">Product Name</label>
+          <input type="text" id="p-name" maxlength="120" required oninput="updateSlugPreview()">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap:15px;">
+          <div class="form-group">
+            <label for="p-price">Sale Price (৳)</label>
+            <input type="number" id="p-price" required oninput="calcDiscountPreview()">
+          </div>
+          <div class="form-group">
+            <label for="p-old-price">Original Price (৳)</label>
+            <input type="number" id="p-old-price" required oninput="calcDiscountPreview()">
+          </div>
+        </div>
+        <div style="font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 12px;" id="discount-preview"></div>
+
+        <div class="form-group">
+          <label>Product Image Upload</label>
+          <div class="drop-zone" id="drop-zone" onclick="document.getElementById('p-image-file').click()">
+            <p>Drag &amp; drop product image here, or click to choose file</p>
+            <input type="file" id="p-image-file" style="display: none;" accept="image/*" onchange="processImageFile(this.files[0])">
+          </div>
+          <div class="preview-box" id="image-preview-box" style="display: none;">
+            <img id="img-preview-tag" src="" alt="Thumbnail Preview">
+            <div style="font-size: 11px; color:#555;">
+              <div>Format: JPEG/PNG auto-resized</div>
+              <div id="img-details"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="p-desc">Product Description (Max 800 chars)</label>
+          <textarea id="p-desc" rows="4" maxlength="800" oninput="updateCharCounter()"></textarea>
+          <div style="text-align: right; font-size: 11px; color:#999;" id="char-counter">0 / 800</div>
+        </div>
+
+        <div class="form-group">
+          <label>Key Features</label>
+          <div id="features-container"></div>
+          <button type="button" class="btn btn-secondary" style="font-size:12px; padding: 6px 12px; margin-top:8px;" onclick="addFeatureRow('')">+ Add feature point</button>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // System Variables
+    let repo = '';
+    let token = '';
+    let products = [];
+    let productsFileSha = '';
+    let editProductId = null;
+
+    // Track Multi-file Base64 Image Changes
+    const pendingImagesMap = new Map();
+
+    // Session Timeout Monitor
+    let inactivityTimer = 1800; // 30 minutes
+    let sessionInterval = null;
+
+    // Standard Lockout Safety Setup
+    const LOCK_ATTEMPTS = 5;
+    const LOCK_TIME_MS = 15 * 60 * 1000;
+
+    // Initial load
+    window.onload = () => {
+      // Check active session
+      const savedRepo = sessionStorage.getItem('admin_repo');
+      const savedToken = sessionStorage.getItem('admin_token');
+
+      if (savedRepo && savedToken) {
+        repo = savedRepo;
+        token = savedToken;
+        document.getElementById('auth-view').style.display = 'none';
+        document.getElementById('main-dashboard').style.display = 'block';
+        document.getElementById('lbl-repo').textContent = repo;
+        startSessionCountdown();
+        fetchProductsFromGitHub();
+      }
+
+      // Track activity to reset countdown
+      window.onmousemove = resetInactivityTimer;
+      window.onkeydown = resetInactivityTimer;
+      window.onclick = resetInactivityTimer;
+
+      setupDragAndDrop();
+    };
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeProductModal();
+      }
+    });
+
+    // Alert / Toast function
+    function showToast(msg, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.background = isSuccess ? '#2e7d32' : '#c62828';
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    // Session Monitor
+    function startSessionCountdown() {
+      if (sessionInterval) clearInterval(sessionInterval);
+      sessionInterval = setInterval(() => {
+        inactivityTimer--;
+        const mins = Math.floor(inactivityTimer / 60).toString().padStart(2, '0');
+        const secs = (inactivityTimer % 60).toString().padStart(2, '0');
+        document.getElementById('lbl-timer').textContent = `${mins}:${secs}`;
+        
+        if (inactivityTimer <= 0) {
+          handleLogout();
+          showToast('Session expired due to inactivity.', false);
+        }
+      }, 1000);
+    }
+
+    function resetInactivityTimer() {
+      if (token) inactivityTimer = 1800;
+    }
+
+    // Lockout handling
+    function checkLockout() {
+      const lockUntil = localStorage.getItem('lockout_until');
+      if (lockUntil && Date.now() < parseInt(lockUntil)) {
+        const remaining = Math.ceil((parseInt(lockUntil) - Date.now()) / 1000 / 60);
+        showToast(`Account locked. Try again in ${remaining} minutes.`, false);
+        return true;
+      }
+      return false;
+    }
+
+    // Validation login credentials via API
+    async function handleLogin() {
+      if (checkLockout()) return;
+
+      const repoInput = document.getElementById('repo-name').value.trim();
+      const tokenInput = document.getElementById('pat-token').value.trim();
+      
+      showLoader(true, 'Authorizing Access Token...');
+
+      try {
+        const response = await fetch(`https://api.github.com/repos/${repoInput}`, {
+          headers: { 'Authorization': `Bearer ${tokenInput}` }
+        });
+
+        if (!response.ok) throw new Error('Unauthorized repo access');
+
+        // Successful Authentication
+        repo = repoInput;
+        token = tokenInput;
+        localStorage.setItem('auth_failures', '0');
+
+        sessionStorage.setItem('admin_repo', repo);
+        sessionStorage.setItem('admin_token', token);
+
+        document.getElementById('auth-view').style.display = 'none';
+        document.getElementById('main-dashboard').style.display = 'block';
+        document.getElementById('lbl-repo').textContent = repo;
+        
+        startSessionCountdown();
+        fetchProductsFromGitHub();
+      } catch (err) {
+        let failures = parseInt(localStorage.getItem('auth_failures') || '0');
+        failures++;
+        localStorage.setItem('auth_failures', failures.toString());
+
+        if (failures >= LOCK_ATTEMPTS) {
+          const blockTime = Date.now() + LOCK_TIME_MS;
+          localStorage.setItem('lockout_until', blockTime.toString());
+          showToast('Too many failures. Account locked for 15 minutes.', false);
+        } else {
+          showToast(`Invalid Repo details or PAT. (${failures}/${LOCK_ATTEMPTS} attempts)`, false);
+        }
+      } finally {
+        showLoader(false);
+      }
+    }
+
+    function handleLogout() {
+      sessionStorage.clear();
+      token = '';
+      repo = '';
+      clearInterval(sessionInterval);
+      document.getElementById('main-dashboard').style.display = 'none';
+      document.getElementById('auth-view').style.display = 'block';
+    }
+
+    // Load original products from master storage file
+    async function fetchProductsFromGitHub() {
+      showLoader(true, 'Fetching products database from GitHub...');
+      try {
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/products.json`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) throw new Error('Database products.json not found inside repository root.');
+
+        const payload = await response.json();
+        productsFileSha = payload.sha;
+        const rawContent = atob(payload.content.replace(/\s/g, ''));
+        products = JSON.parse(rawContent);
+
+        renderInventoryTable();
+      } catch (err) {
+        showToast('Failed to load database. Creating empty base array state.', false);
+        products = [];
+        renderInventoryTable();
+      } finally {
+        showLoader(false);
+      }
+    }
+
+    function showLoader(show, msg = '') {
+      const overlay = document.getElementById('loading-overlay');
+      overlay.style.display = show ? 'flex' : 'none';
+      if (msg) document.getElementById('loading-msg').textContent = msg;
+    }
+
+    // Render operations
+    function renderInventoryTable() {
+      const tbody = document.getElementById('inventory-tbody');
+      tbody.innerHTML = '';
+      
+      let discountSum = 0;
+      let validDiscounts = 0;
+
+      products.forEach(p => {
+        const tr = document.createElement('tr');
+        
+        const idCell = document.createElement('td');
+        idCell.textContent = p.id;
+        tr.appendChild(idCell);
+
+        // Thumbnail image
+        const imgCell = document.createElement('td');
+        const img = document.createElement('img');
+        
+        // Handle previews for base64 images that are local-only before saving to repo
+        if (pendingImagesMap.has(p.image)) {
+          img.src = pendingImagesMap.get(p.image);
+        } else {
+          img.src = `https://raw.githubusercontent.com/${repo}/main/${p.image}`;
+        }
+        
+        img.onerror = () => { img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"%3E%3Crect width="50" height="50" fill="%23eee"/%3E%3C/svg%3E'; };
+        imgCell.appendChild(img);
+        tr.appendChild(imgCell);
+
+        const nameCell = document.createElement('td');
+        nameCell.textContent = p.name;
+        tr.appendChild(nameCell);
+
+        const priceCell = document.createElement('td');
+        priceCell.textContent = `৳ ${p.price}`;
+        tr.appendChild(priceCell);
+
+        const oldPriceCell = document.createElement('td');
+        oldPriceCell.textContent = `৳ ${p.old_price}`;
+        tr.appendChild(oldPriceCell);
+
+        // Discount setup
+        const discCell = document.createElement('td');
+        if (p.old_price > p.price) {
+          const discount = Math.round(((p.old_price - p.price) / p.old_price) * 100);
+          const pill = document.createElement('span');
+          pill.className = 'discount-pill';
+          pill.textContent = `-${discount}%`;
+          discCell.appendChild(pill);
+          discountSum += discount;
+          validDiscounts++;
+        } else {
+          discCell.textContent = 'N/A';
+        }
+        tr.appendChild(discCell);
+
+        // Edit/Delete options
+        const actionsCell = document.createElement('td');
+        
+        const btnEdit = document.createElement('button');
+        btnEdit.className = 'btn btn-primary';
+        btnEdit.style.fontSize = '12px';
+        btnEdit.style.padding = '6px 12px';
+        btnEdit.style.marginRight = '8px';
+        btnEdit.textContent = 'Edit';
+        btnEdit.onclick = () => openProductModal(p.id);
+        
+        const btnDel = document.createElement('button');
+        btnDel.className = 'btn btn-danger';
+        btnDel.style.fontSize = '12px';
+        btnDel.style.padding = '6px 12px';
+        btnDel.textContent = 'Delete';
+        btnDel.onclick = () => deleteProduct(p.id);
+
+        actionsCell.appendChild(btnEdit);
+        actionsCell.appendChild(btnDel);
+        tr.appendChild(actionsCell);
+
+        tbody.appendChild(tr);
+      });
+
+      // Update stat counters
+      document.getElementById('stat-total-products').textContent = products.length;
+      document.getElementById('stat-avg-discount').textContent = 
+        validDiscounts > 0 ? Math.round(discountSum / validDiscounts) + '%' : '0%';
+    }
+
+    // Modal forms operations
+    function openProductModal(id = null) {
+      editProductId = id;
+      document.getElementById('product-form').reset();
+      document.getElementById('features-container').innerHTML = '';
+      document.getElementById('image-preview-box').style.display = 'none';
+      document.getElementById('discount-preview').textContent = '';
+      
+      const modal = document.getElementById('product-modal');
+
+      if (id) {
+        document.getElementById('modal-heading').textContent = 'Edit Product';
+        const p = products.find(x => x.id === id);
+        
+        document.getElementById('p-name').value = p.name;
+        document.getElementById('p-price').value = p.price;
+        document.getElementById('p-old-price').value = p.old_price;
+        document.getElementById('p-desc').value = p.description || '';
+        
+        // Populate features
+        if (p.features && Array.isArray(p.features)) {
+          p.features.forEach(feat => addFeatureRow(feat));
+        }
+
+        // Show Thumbnail preview
+        const imgTag = document.getElementById('img-preview-tag');
+        if (pendingImagesMap.has(p.image)) {
+          imgTag.src = pendingImagesMap.get(p.image);
+        } else {
+          imgTag.src = `https://raw.githubusercontent.com/${repo}/main/${p.image}`;
+        }
+        document.getElementById('image-preview-box').style.display = 'flex';
+        document.getElementById('img-details').textContent = 'Existing image loaded.';
+        
+        // Cache current image path
+        modal.dataset.currentImagePath = p.image;
+        calcDiscountPreview();
+        updateCharCounter();
+      } else {
+        document.getElementById('modal-heading').textContent = 'Add Product';
+        modal.dataset.currentImagePath = '';
+        addFeatureRow('');
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').style.display = 'none';
+    }
+
+    function addFeatureRow(val = '') {
+      const container = document.getElementById('features-container');
+      const row = document.createElement('div');
+      row.className = 'feature-row';
+      
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'e.g. 100ml Eau de Parfum';
+      input.value = val;
+      
+      const btnRem = document.createElement('button');
+      btnRem.type = 'button';
+      btnRem.className = 'btn btn-danger';
+      btnRem.textContent = '×';
+      btnRem.onclick = () => row.remove();
+
+      row.appendChild(input);
+      row.appendChild(btnRem);
+      container.appendChild(row);
+    }
+
+    function calcDiscountPreview() {
+      const price = parseFloat(document.getElementById('p-price').value || 0);
+      const oldPrice = parseFloat(document.getElementById('p-old-price').value || 0);
+      const prev = document.getElementById('discount-preview');
+
+      if (price > 0 && oldPrice > price) {
+        const disc = Math.round(((oldPrice - price) / oldPrice) * 100);
+        prev.textContent = `Discount badge will show: -${disc}%`;
+      } else {
+        prev.textContent = '';
+      }
+    }
+
+    function updateCharCounter() {
+      const desc = document.getElementById('p-desc');
+      const count = desc.value.length;
+      const counter = document.getElementById('char-counter');
+      counter.textContent = `${count} / 800`;
+      counter.style.color = count > 700 ? 'orange' : '#999';
+    }
+
+    // Drag-and-drop actions
+    function setupDragAndDrop() {
+      const zone = document.getElementById('drop-zone');
+      ['dragenter', 'dragover'].forEach(name => {
+        zone.addEventListener(name, (e) => {
+          e.preventDefault(); e.stopPropagation();
+          zone.style.borderColor = 'var(--primary)';
+        }, false);
+      });
+      ['dragleave', 'drop'].forEach(name => {
+        zone.addEventListener(name, (e) => {
+          e.preventDefault(); e.stopPropagation();
+          zone.style.borderColor = 'var(--border)';
+        }, false);
+      });
+      zone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        if (dt.files && dt.files[0]) processImageFile(dt.files[0]);
+      });
+    }
+
+    // Canvas scaling processes (800x800 white background, containment-fitting)
+    function processImageFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const imgObj = new Image();
+        imgObj.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = 800;
+          canvas.height = 800;
+          const ctx = canvas.getContext('2d');
+
+          // Draw white background
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, 800, 800);
+
+          // Calculate containment sizes preserving image aspect ratios
+          const ratio = Math.min(800 / imgObj.width, 800 / imgObj.height);
+          const w = imgObj.width * ratio;
+          const h = imgObj.height * ratio;
+          const x = (800 - w) / 2;
+          const y = (800 - h) / 2;
+
+          ctx.drawImage(imgObj, x, y, w, h);
+
+          // Convert processed output to base64 jpeg
+          const outBase64 = canvas.toDataURL('image/jpeg', 0.85);
+          
+          // Render locally
+          const imgPreview = document.getElementById('img-preview-tag');
+          imgPreview.src = outBase64;
+          document.getElementById('image-preview-box').style.display = 'flex';
+          
+          // Image size preview details
+          const sizeKb = Math.round((outBase64.length * 3 / 4) / 1024);
+          document.getElementById('img-details').textContent = `Resolution: 800x800px | Size: ~${sizeKb}KB`;
+          
+          // Store raw image state securely to dataset
+          document.getElementById('product-modal').dataset.pendingBase64 = outBase64;
+        };
+        imgObj.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateSlugPreview() {
+      // Dynamic generation of image path strings matching slug specifications
+      const name = document.getElementById('p-name').value;
+      const slug = name.toLowerCase()
+                       .replace(/[^a-z0-9\s]/g, '')
+                       .trim()
+                       .replace(/\s+/g, '-')
+                       .substring(0, 40);
+      return `images/${slug || 'product'}.jpg`;
+    }
+
+    // Save localized edits
+    function saveProductLocal() {
+      const name = document.getElementById('p-name').value.trim();
+      const price = parseFloat(document.getElementById('p-price').value);
+      const oldPrice = parseFloat(document.getElementById('p-old-price').value);
+      const desc = document.getElementById('p-desc').value.trim();
+
+      if (price <= 0) {
+        showToast('Price must be greater than zero.', false);
+        return;
+      }
+      if (oldPrice <= price) {
+        showToast('Original price must be greater than sale price.', false);
+        return;
+      }
+
+      // Feature extraction
+      const featureInputs = document.querySelectorAll('#features-container input');
+      const features = Array.from(featureInputs).map(inp => inp.value.trim()).filter(Boolean);
+
+      const modal = document.getElementById('product-modal');
+      const activePendingB64 = modal.dataset.pendingBase64;
+      let targetImagePath = modal.dataset.currentImagePath;
+
+      if (activePendingB64) {
+        targetImagePath = updateSlugPreview();
+        // Insert into Multi-Image pending Map
+        pendingImagesMap.set(targetImagePath, activePendingB64);
+      }
+
+      if (!targetImagePath) {
+        showToast('An image upload is required for new products.', false);
+        return;
+      }
+
+      if (editProductId) {
+        // Edit flow
+        const idx = products.findIndex(p => p.id === editProductId);
+        if (idx !== -1) {
+          products[idx] = {
+            id: editProductId,
+            name, price, old_price: oldPrice,
+            image: targetImagePath,
+            description: desc,
+            features
+          };
+        }
+      } else {
+        // Create flow
+        const nextId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+        products.push({
+          id: nextId,
+          name, price, old_price: oldPrice,
+          image: targetImagePath,
+          description: desc,
+          features
+        });
+      }
+
+      modal.dataset.pendingBase64 = ''; // Reset modal storage
+      closeProductModal();
+      renderInventoryTable();
+      showToast('Product updated locally. Remember to "Push to GitHub" to save changes live.', true);
+    }
+
+    function deleteProduct(id) {
+      if (confirm('Are you sure you want to remove this product from inventory?')) {
+        products = products.filter(p => p.id !== id);
+        renderInventoryTable();
+        showToast('Product deleted locally. Remember to Push changes.', true);
+      }
+    }
+
+    // Synchronize localized database and processed maps directly with remote Github contents
+    async function pushChangesToGitHub() {
+      if (products.length === 0 && !confirm('The products database is completely empty. Push empty state?')) return;
+
+      showLoader(true, 'Publishing changes to GitHub...');
+      
+      try {
+        // Step 1: Push all pending images tracked in the Map using serial loop flow
+        let imgIndex = 0;
+        const totalImages = pendingImagesMap.size;
+        
+        for (let [filePath, base64Data] of pendingImagesMap.entries()) {
+          imgIndex++;
+          document.getElementById('loading-msg').textContent = `Uploading image ${imgIndex} of ${totalImages}: ${filePath}`;
+          
+          // Strip out canvas schema headers
+          const cleanB64 = base64Data.split(',')[1];
+          let currentImageSha = '';
+
+          // Check if file exists to fetch active SHA
+          try {
+            const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (checkRes.ok) {
+              const fileMeta = await checkRes.json();
+              currentImageSha = fileMeta.sha;
+            }
+          } catch (e) {
+            // File does not exist yet; proceed to upload new asset
+          }
+
+          // Build request payload
+          const imgPayload = {
+            message: `Publish product image asset: ${filePath}`,
+            content: cleanB64
+          };
+          if (currentImageSha) imgPayload.sha = currentImageSha;
+
+          const imgPutRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+            method: 'PUT',
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(imgPayload)
+          });
+
+          if (!imgPutRes.ok) throw new Error(`Failed uploading file: ${filePath}`);
+        }
+
+        // Step 2: Push products.json
+        document.getElementById('loading-msg').textContent = 'Updating products.json database file...';
+        
+        const jsonString = JSON.stringify(products, null, 2);
+        const productsB64 = btoa(unescape(encodeURIComponent(jsonString)));
+
+        const dbPayload = {
+          message: 'Update products database via scentmark admin panel',
+          content: productsB64,
+          sha: productsFileSha
+        };
+
+        const dbRes = await fetch(`https://api.github.com/repos/${repo}/contents/products.json`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dbPayload)
+        });
+
+        if (!dbRes.ok) throw new Error('Failed to update products.json on remote repository.');
+
+        const dbResData = await dbRes.json();
+        productsFileSha = dbResData.content.sha; // Update SHA references
+
+        // Success Cleanup
+        pendingImagesMap.clear();
+        document.getElementById('stat-sync-time').textContent = 'Pushed changes live at: ' + new Date().toLocaleTimeString();
+        showToast('All changes successfully pushed to live website!', true);
+      } catch (err) {
+        console.error(err);
+        showToast('Database synchronization error: ' + err.message, false);
+      } finally {
+        showLoader(false);
+      }
+    }
+  </script>
+</body>
+</html>
