@@ -37,5 +37,17 @@
       "Signature metallic aquatic fragrance profile",
       "Exceptional longevity in hot climates"
     ]
+  },
+  {
+    "id": 4,
+    "name": "Fogg Body Spray Marco",
+    "price": 480,
+    "old_price": 690,
+    "image": "images/fogg-body-spray-marco.jpg",
+    "description": "Fogg Body Spray Marco is a premium deodorant body spray designed for individuals seeking a fresh, masculine, and long-lasting fragrance. It combines aromatic and woody notes, delivering a sophisticated scent that keeps you confident throughout the day. With a no-gas formula, this body spray provides maximum usage and better fragrance coverage.",
+    "features": [
+      "Long-Lasting Fragrance: Keeps you fresh and fragrant all day.",
+      "No Gas Formula"
+    ]
   }
 ]
