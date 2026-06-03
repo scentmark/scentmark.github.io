@@ -1,7 +1,7 @@
 // CONFIG object - Centrally houses all configuration values
 const CONFIG = {
   whatsappNumber: '8801305041433', // Numeric international format (no leading + or 00)
-  googleScriptURL: 'https://script.google.com/macros/s/AKfycbzvfecZA-Y6uw0J9qNai9A9jvrBumQXwz_zWMkph6YAsc2pNw5rpM2jFD_rMInUIKNQ/exec',
+  googleScriptURL: 'https://script.google.com/macros/s/AKfycbw9Mgpo6l1vzpEBcI79gEjaDsTn3TosMH78v3q-8JRp00yLDlSNvlB1Tf4DEdFcvSCm/exec',
   cartKey: 'scentmark-cart',
   phoneRegex: /^01[3-9]\d{8}$/, // Bangladesh mobile validation
   bkashNumber: '+8801305041433',
