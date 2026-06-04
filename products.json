@@ -49,5 +49,17 @@
       "Long-Lasting Fragrance: Keeps you fresh and fragrant all day.",
       "No Gas Formula"
     ]
+  },
+  {
+    "id": 5,
+    "name": "Blue Lady 40 ml perfume",
+    "price": 1675,
+    "old_price": 1890,
+    "image": "images/blue-lady-40-ml-perfume.jpg",
+    "description": "Very sweet floral bouquet with citrus notes and fruity touches. The fruity notes gives freshness and diffusion. The accord finishes with a soft musky effect and a lasting woody base. Very feminine with a sensual touch. This floral fragrance stays fresh always.",
+    "features": [
+      "Very sweet floral bouquet with citrus notes and fruity touches.",
+      "40ml, EDP."
+    ]
   }
 ]
